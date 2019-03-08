@@ -19,11 +19,11 @@ extern enum keys
 
 void blank_meter()
 {
-	sprintf(bufMsg, "ins:____avg:____");
+	sprintf(bufMsg, "V:_____  A:_____ ");
 	lcd_pos(0, 0);
 	lcd_puts2(bufMsg);
 
-	sprintf(bufMsg, "min:____max:____");
+	sprintf(bufMsg, "L:_____  H:_____");
 	lcd_pos(1, 0);
 	lcd_puts2(bufMsg);
 
@@ -82,6 +82,7 @@ int main(void)
 	float minv = 0.0;
 	float maxv = 0.0;
 	float total = 0.0;
+	char neg = 0;
 	unsigned short counter = 0;
 
 	while (1==1)
@@ -103,7 +104,20 @@ int main(void)
 				}
 
 				//curr = (float) get_sample()   / 1023.0 * 5.0 ;
-				currentv = (float) get_sample() /496.0 * 5.0;
+				
+				
+				int sample = get_sample();
+				if(sample<512)
+				{
+					currentv = (float) sample /512.0 * 5.0;
+					//neg = 0;
+				}
+				else
+				{
+					currentv = 512.0 * 5.0 / (~sample) ;
+					//neg = 1;
+				}
+				//currentv = get_sample();
 				//float x = curr;
 				//curr = .000006 * x * x - 0.0016 * x - 0.024;
 				
@@ -138,11 +152,11 @@ int main(void)
 				total += currentv;
 				averagev = total / (float) counter;
 
-				sprintf(bufMsg, "Ins:%.2fAvg:%.2f", currentv, averagev);
+				sprintf(bufMsg, "V:%.2f  A:%.2f", currentv, averagev);
 				lcd_pos(0, 0);
 				lcd_puts2(bufMsg);
 
-				sprintf(bufMsg, "Min:%.2fMax:%.2f", minv, maxv);
+				sprintf(bufMsg, "L:%.2f  H:%.2f", minv, maxv);
 				lcd_pos(1, 0);
 				lcd_puts2(bufMsg);
 
