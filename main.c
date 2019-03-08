@@ -91,11 +91,12 @@ int main(void)
 	avr_init();
 	lcd_init();
 	blank_meter();
-	//welcome();
+	welcome();
 	float curr = 0.0;
 	float avg = 0.0;
 	float min = 0.0;
 	float max = 0.0;
+	while(!(keypad_get_key()) == KeyC){}
 	float total = 0.0;
 	unsigned short count = 0;
 
