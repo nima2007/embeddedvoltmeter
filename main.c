@@ -8,23 +8,70 @@
 
 char bufMsg[17];
 
-void ini_meter(){
-	sprintf(bufMsg, "Ins:____Avg:____");
-	pos_lcd(0,0);
-	puts_lcd2(bufMsg);
-	
-	sprintf(bufMsg, "Min:____Max:____");
-	pos_lcd(1,0);
-	puts_lcd2(bufMsg);
+unsigned int is_pressed(int r, int c)
+{
+	//Set to default
+	DDRC = 0;
+
+	c += 4;
+	//Set row to output and STRONG 0
+	SET_BIT(DDRC, r);
+	CLR_BIT(PORTC, r);
+
+	//Set column to input and WEAK 1
+	CLR_BIT(DDRC, c);
+	SET_BIT(PORTC, c);
+
+	return (GET_BIT(PINC, c)) == 0 ? 1 : 0;
 }
 
-unsigned short get_A2D(){
+unsigned int get_key()
+{
+	int r, c;
+	for (r = 0; r < 4; ++r)
+	{
+		for (c = 0; c < 4; ++c)
+		{
+			if (is_pressed(r, c))
+			return r * 4 + c + 1;
+		}
+	}
+	return 0;
+}
+
+
+void ini_meter(){
+	sprintf(bufMsg, "Ins:____Avg:____");
+	lcd_pos(0,0);
+	lcd_puts2(bufMsg);
+	
+	sprintf(bufMsg, "Min:____Max:____");
+	lcd_pos(1,0);
+	lcd_puts2(bufMsg);
+}
+
+unsigned short get_reading(){
 	ADMUX |= (1<<REFS0);
-	SET_BIT(ADCSRA, 7); //Set ADEN
-	SET_BIT(ADCSRA, 6); //Set ADSC start conversion
-	while(GET_BIT(ADCSRA, 6)); //wait to finish measure
+	SET_BIT(ADCSRA, 7);
+	SET_BIT(ADCSRA, 6); 
+	while(GET_BIT(ADCSRA, 6)); 
 	
 	return ADC;
+}
+
+void welcome()
+{
+	lcd_clr();
+	lcd_pos(0,0);
+	char buf[17];
+	sprintf(buf, "ByeJose Meter");
+	wait_avr(500);
+	lcd_puts2(buf);
+	lcd_pos(1, 0);
+	sprintf(buf, "V1.00");
+	lcd_puts2(buf);
+	wait_avr(1000);
+	
 }
 
 int main(void)
@@ -32,6 +79,7 @@ int main(void)
 	ini_avr();
 	ini_lcd();
 	ini_meter();
+	welcome();
 	float curr = 0.0;
 	float avg = 0.0;
 	float min = 0.0;
@@ -54,7 +102,7 @@ int main(void)
 					break;
 				}
 				
-				curr = (float)get_A2D() / 1023.0 * 5.0;
+				curr = (float)get_reading() / 1023.0 * 5.0;
 				++count;
 				
 				if(count == 1){
@@ -74,12 +122,12 @@ int main(void)
 				avg = 1.1;
 				
 				sprintf(bufMsg, "Ins:%.2fAvg:%.2f", curr, avg);
-				pos_lcd(0,0);
-				puts_lcd2(bufMsg);
+				lcd_pos(0,0);
+				lcd_puts2(bufMsg);
 				
 				sprintf(bufMsg, "Min:%.2fMax:%.2f", min, max);
-				pos_lcd(1,0);
-				puts_lcd2(bufMsg);
+				lcd_pos(1,0);
+				lcd_puts2(bufMsg);
 				
 				wait_avr(500);
 			}
