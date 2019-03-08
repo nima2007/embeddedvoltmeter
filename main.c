@@ -111,6 +111,8 @@ int main(void)
 					max = 0.0;
 					total = 0.0;
 					count = 0;
+					while(!(keypad_get_key() == KeyC){}
+
 					break;
 				}
 				
