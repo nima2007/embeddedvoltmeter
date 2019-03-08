@@ -3,12 +3,24 @@
 #include <avr/io.h>
 #include "stdio.h"
 #include "avr.h"
-#include "keypad.h"
 #include "lcd.h"
 
 char bufMsg[17];
 
-unsigned int is_pressed(int r, int c)
+const char keypad[17] = {
+	'1', '2', '3', 'A',
+	'4', '5', '6', 'B',
+	'7', '8', '9', 'C',
+'*', '0', '#', 'D'};
+
+extern enum keys  {Key1, Key2, Key3, KeyA,
+	Key4, Key5, Key6, KeyB,
+	Key7, Key8, Key9, KeyC,
+KeyStar, Key0, KeyPound, KeyD};
+
+
+
+unsigned int keypad_is_pressed(int r, int c)
 {
 	//Set to default
 	DDRC = 0;
@@ -25,14 +37,14 @@ unsigned int is_pressed(int r, int c)
 	return (GET_BIT(PINC, c)) == 0 ? 1 : 0;
 }
 
-unsigned int get_key()
+unsigned int keypad_get_key()
 {
 	int r, c;
 	for (r = 0; r < 4; ++r)
 	{
 		for (c = 0; c < 4; ++c)
 		{
-			if (is_pressed(r, c))
+			if (keypad_is_pressed(r, c))
 			return r * 4 + c + 1;
 		}
 	}
@@ -40,7 +52,7 @@ unsigned int get_key()
 }
 
 
-void ini_meter(){
+void blank_meter(){
 	sprintf(bufMsg, "Ins:____Avg:____");
 	lcd_pos(0,0);
 	lcd_puts2(bufMsg);
@@ -77,8 +89,8 @@ void welcome()
 int main(void)
 {
 	ini_avr();
-	ini_lcd();
-	ini_meter();
+	lcd_init();
+	blank_meter();
 	welcome();
 	float curr = 0.0;
 	float avg = 0.0;
@@ -89,10 +101,10 @@ int main(void)
 
 	while (1)
 	{
-		if(get_key() == 4){
+		if(keypad_get_key() == KeyA){
 			while(1){
-				if(get_key() == 8){
-					ini_meter();
+				if(keypad_get_key() == KeyB){
+					blank_meter();
 					curr = 0.0;
 					avg = 0.0;
 					min = 0.0;
