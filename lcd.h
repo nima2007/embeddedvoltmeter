@@ -1,11 +1,18 @@
-#ifndef __lcd__
-#define __lcd__
+// Project 3 Jose&Nima
 
-void ini_lcd(void);
-void clr_lcd(void);
-void pos_lcd(unsigned char r, unsigned char c);
-void put_lcd(char c);
-void puts_lcd1(const char *s);
-void puts_lcd2(const char *s);
+#ifndef _LCD_H
+#define _LCD_H
 
-#endif
+void lcd_init(void);
+
+void lcd_clr(void);
+
+void lcd_pos(unsigned char r, unsigned char c);
+
+void lcd_put(char c);
+
+void lcd_puts1(const char *s);
+
+void lcd_puts2(const char *s);
+
+#endif /* _LCD_H */

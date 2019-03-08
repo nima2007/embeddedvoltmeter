@@ -77,21 +77,21 @@ void welcome()
 	lcd_pos(0,0);
 	char buf[17];
 	sprintf(buf, "ByeJose Meter");
-	wait_avr(500);
+	avr_wait(500);
 	lcd_puts2(buf);
 	lcd_pos(1, 0);
 	sprintf(buf, "V1.00");
 	lcd_puts2(buf);
-	wait_avr(1000);
+	avr_wait(1000);
 	
 }
 
 int main(void)
 {
-	ini_avr();
+	avr_init();
 	lcd_init();
 	blank_meter();
-	welcome();
+	//welcome();
 	float curr = 0.0;
 	float avg = 0.0;
 	float min = 0.0;
@@ -111,7 +111,7 @@ int main(void)
 					max = 0.0;
 					total = 0.0;
 					count = 0;
-					while(!(keypad_get_key() == KeyC){}
+					while(!(keypad_get_key() == KeyC)){}
 
 					break;
 				}
@@ -143,7 +143,7 @@ int main(void)
 				lcd_pos(1,0);
 				lcd_puts2(bufMsg);
 				
-				wait_avr(500);
+				avr_wait(500);
 			}
 		}
 	}
